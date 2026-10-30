@@ -217,20 +217,47 @@ function 기록만들기(과목, 종류, 몸) {
   저장.쓰기("내기록", 저장.읽기("내기록", []).concat([{ 이름, 내용: 대기[대기.length - 1].내용 }]).slice(-300));   // 이 기기에서 푼 것(같은 문제를 다시 내지 않게)
   return { 이름, 기록ID };
 }
-async function 대기보내기(수이름) {
-  let 대기 = 저장.읽기("대기", []);
-  const 보냄 = 저장.읽기("보냄", []);
-  const 남김 = [];
-  for (const x of 대기) {
-    try {
-      x.시도 = (x.시도 || 0) + 1;
-      const d = await 중계("쓰기", { 이름: x.이름, 내용: x.내용 });
-      if (d.결과 === "씀" || (d.결과 === "있음" && d.같음)) { await 캐시.파일쓰기("수신함/" + x.이름, x.내용); 보냄.push({ 이름: x.이름, 기록ID: x.기록ID, 보낸: new Date().toISOString(), 확인: false }); continue; }
-      x.오류 = d.결과 === "있음" ? "같은 이름에 다른 내용이 있음(본부에 보고 필요)" : (d.까닭 || d.결과);
-      남김.push(x);
-    } catch (e) { x.오류 = e.message; 남김.push(x); }
+// 대기 목록은 보내는 동안에도 새 기록이 들어올 수 있다 → 한 건씩 저장소를 다시 읽고 그 이름만 고친다(통째로 덮어쓰지 않음)
+let 보내기잠금 = Promise.resolve();
+function 대기보내기(수이름) {
+  const 일 = 보내기잠금.then(() => 대기보내기_한번(수이름));
+  보내기잠금 = 일.catch(() => {});
+  return 일;
+}
+function 대기고치기(이름, 고침) {   // 고침(x) → x(남김) 또는 null(뺌)
+  const 새 = [];
+  for (const x of 저장.읽기("대기", [])) { if (x.이름 !== 이름) { 새.push(x); continue; } const y = 고침(x); if (y) 새.push(y); }
+  저장.쓰기("대기", 새);
+}
+function 잃은기록되살리기() {   // 이 기기에서 만든 기록(내기록) 가운데 대기에도 보냄에도 없는 것 → 대기로(같은 이름·같은 내용)
+  const 대기 = 저장.읽기("대기", []), 보냄 = 저장.읽기("보냄", []);
+  const 있는 = new Set(대기.map(x => x.이름).concat(보냄.map(x => x.이름)));
+  const 되살림 = 저장.읽기("내기록", []).filter(x => !있는.has(x.이름));
+  if (!되살림.length) return;
+  for (const x of 되살림) {
+    let 기록ID = "-"; try { 기록ID = JSON.parse(x.내용)["기록ID"]; } catch (e) { /* 그대로 */ }
+    대기.push({ 이름: x.이름, 기록ID, 내용: x.내용, 만든: new Date().toISOString(), 시도: 0, 오류: "되살림" });
   }
-  저장.쓰기("대기", 남김);
+  저장.쓰기("대기", 대기);
+}
+async function 대기보내기_한번(수이름) {
+  잃은기록되살리기();
+  for (const x of 저장.읽기("대기", [])) {
+    try {
+      const d = await 중계("쓰기", { 이름: x.이름, 내용: x.내용 });
+      if (d.결과 === "씀" || (d.결과 === "있음" && d.같음)) {
+        await 캐시.파일쓰기("수신함/" + x.이름, x.내용);
+        const 보냄 = 저장.읽기("보냄", []);
+        if (!보냄.some(y => y.이름 === x.이름)) 보냄.push({ 이름: x.이름, 기록ID: x.기록ID, 보낸: new Date().toISOString(), 확인: false });
+        저장.쓰기("보냄", 보냄.slice(-300));
+        대기고치기(x.이름, () => null);
+        continue;
+      }
+      const 오류 = d.결과 === "있음" ? "같은 이름에 다른 내용이 있음(본부에 보고 필요)" : (d.까닭 || d.결과);
+      대기고치기(x.이름, y => Object.assign(y, { 시도: (y.시도 || 0) + 1, 오류 }));
+    } catch (e) { 대기고치기(x.이름, y => Object.assign(y, { 시도: (y.시도 || 0) + 1, 오류: e.message })); }
+  }
+  const 보냄 = 저장.읽기("보냄", []);
   // 보낸 뒤 수신함 목록을 다시 읽어 그 이름이 있는지 확인 → ✓
   let 목록 = 수이름;
   if (보냄.some(x => !x.확인)) {
