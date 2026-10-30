@@ -22,10 +22,16 @@
     const 후보 = [];
     const i = 글.indexOf("(=");
     if (i >= 0) {
-      const j = 글.indexOf(")", i);
+      // 닫는 괄호는 짝을 세어 찾는다(`음의 일 (=음(-)의 일, negative work)`)
+      let 깊이 = 0, j = -1;
+      for (let k = i; k < 글.length; k++) {
+        if (글[k] === "(") 깊이++;
+        else if (글[k] === ")" && --깊이 === 0) { j = k; break; }
+      }
       const 안 = 글.slice(i + 2, j < 0 ? 글.length : j);
       후보.push(글.slice(0, i).trim());
-      for (const x of 안.split(/[,，]/)) if (x.trim()) 후보.push(x.trim());
+      // 쉼표로 가르되 숫자 사이 쉼표(`1,200 W`)는 가르지 않는다
+      for (const x of 안.split(/(?<!\d)[,，]|[,，](?!\d)/)) if (x.trim()) 후보.push(x.trim());
     } else 후보.push(글);
     return 후보.filter(x => x !== "");
   }
@@ -34,6 +40,7 @@
   function 통일(s) {
     let t = String(s);
     t = t.replace(/[！-～]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0)).replace(/　/g, " ");   // 전각 → 반각
+    t = t.replace(/[㎏㎎㎝㎜㎞㎡㎥ℓ㎖℃㎉₀₁₂₃₄]/g, ch => 낱글자[ch]);   // 낱글자 표(NFKC는 ㄱ·㉡을 깨뜨려 쓰지 않음)
     t = t.replace(/²/g, "^2").replace(/³/g, "^3");
     t = t.toLowerCase();                                       // 영문 대소문자 통일
     t = t.replace(/(^|[^a-z])x(?=[^a-z]|$)/g, "$1×");          // 낱말 밖의 x만 단위 곱(띄어쓰기를 지우기 전에 본다. max의 x는 둠)
@@ -42,9 +49,15 @@
     while (/\d,\d/.test(t)) t = t.replace(/(\d),(\d)/g, "$1$2");   // 숫자 속 쉼표
     t = t.replace(/[·・ㆍ∙⋅*]/g, "×");                         // 단위 곱
     t = t.replace(/([a-z])(\d)/g, "$1^$2").replace(/\^\^/g, "^");   // 단위 속 숫자는 ^ (m2 → m^2)
+    t = t.replace(/(\d)[~∼〜～-](?=\.?\d)/g, "$1~");            // 범위 기호(숫자 사이만. 부호 -10·KR-20·ㄷ-ㄱ-ㄴ은 그대로)
+    t = t.replace(/^(\d[\d.]*)%~/, "$1~");                     // 범위 앞쪽 단위 생략 50%~60% = 50~60%
+    t = t.replace(/(^|[^\d.])\.(\d)/g, "$10.$2");              // 소수 앞 0: .85 = 0.85
+    t = t.replace(/([a-z])\.([a-z])/g, "$1×$2");               // 영문 사이 점: kg.m/s = kg·m/s
     t = t.replace(/[.。]+$/, "");                               // 끝 마침표
+    if (/^[ㄱ-ㅎ]([,→>·][ㄱ-ㅎ])+$/.test(t)) t = t.replace(/[,→>·]/g, "-");   // 배열 답 구분 기호
     return t;
   }
+  const 낱글자 = { "㎏": "kg", "㎎": "mg", "㎝": "cm", "㎜": "mm", "㎞": "km", "㎡": "m^2", "㎥": "m^3", "ℓ": "l", "㎖": "ml", "℃": "°c", "㎉": "kcal", "₀": "0", "₁": "1", "₂": "2", "₃": "3", "₄": "4" };
   const 배열답_re = /^[ㄱ-ㅎ](-[ㄱ-ㅎ])+$/;
 
   // 채점: 입력 글·정답 칸 → {결과: "O"|"X", 답, 확신도(입력 끝 낱말, 없으면 null), 후보}

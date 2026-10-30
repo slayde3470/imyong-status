@@ -1,6 +1,6 @@
 // 규격 v2.5 기준
 // sw.js — 화면 파일을 저장해 망 없이도 열리게 한다. 자료(중계 응답)는 저장하지 않는다(정본은 수신함, 계산 캐시는 IndexedDB).
-const 판 = "스테이터스-2026-10-30-2";
+const 판 = "스테이터스-2026-10-30-3";
 const 화면파일 = ["./", "index.html", "style.css", "calc.js", "grade.js", "app.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
