@@ -1,0 +1,10 @@
+# 올리지 않는 것: 기록·비밀 글자·중계 주소·폴더 id·중계 코드(작업 지시문 '올리기')
+중계/
+*.gs
+*.md
+!README.md
+*.json
+!manifest.webmanifest
+*.env
+*.log
+_*/

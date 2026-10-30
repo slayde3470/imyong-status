@@ -1,0 +1,82 @@
+<!doctype html>
+<!-- 규격 v2.5 기준 -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14171c">
+<meta name="color-scheme" content="dark light">
+<title>임용 스테이터스</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="윗줄">
+  <div id="시험띠" class="시험띠" hidden>시험 모드 — 기록에 `시험` 표시가 붙고 계산에서 빠집니다</div>
+  <div id="맨위" class="맨위">불러오는 중…</div>
+  <div id="긴급" class="긴급" hidden></div>
+  <div id="대기경고" class="대기경고" hidden></div>
+  <div class="연결줄"><span id="연결">-</span><button id="새로고침" class="작은단추" type="button">새로 받기</button></div>
+</header>
+
+<main>
+  <!-- 상태창 -->
+  <section id="탭-상태" class="탭">
+    <div class="과목고르기"><label for="과목">과목</label><select id="과목"></select></div>
+    <div id="상태본문"></div>
+  </section>
+
+  <!-- 공부 -->
+  <section id="탭-공부" class="탭" hidden>
+    <div id="공부본문"></div>
+  </section>
+
+  <!-- 카드 -->
+  <section id="탭-카드" class="탭" hidden>
+    <div id="카드본문"></div>
+  </section>
+
+  <!-- 기록 -->
+  <section id="탭-기록" class="탭" hidden>
+    <div id="기록본문"></div>
+    <h2>체력 입력</h2>
+    <p class="흐림">잰 항목만 적고 저장하세요. 비운 칸은 기록하지 않습니다.</p>
+    <form id="체력폼" class="체력폼" autocomplete="off"></form>
+    <button id="체력저장" class="큰단추" type="button">체력 저장</button>
+    <p id="체력알림" class="알림" hidden></p>
+  </section>
+
+  <!-- 설정 -->
+  <section id="탭-설정" class="탭" hidden>
+    <h2>설정</h2>
+    <p class="흐림">처음 한 번만 넣습니다. 이 기기 안에만 저장됩니다.</p>
+    <label class="칸">중계 주소<input id="설정-중계" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/…/exec"></label>
+    <label class="칸">비밀 글자<input id="설정-비밀" type="password" autocomplete="off"></label>
+    <label class="칸">기기 글자<select id="설정-기기"></select></label>
+    <label class="칸 한줄"><input id="설정-시험" type="checkbox"> 시험 모드</label>
+    <div id="시험설정" hidden>
+      <label class="칸">시험 모드 날짜 하한(이 날짜 이전 파일 이름은 안 읽음)<input id="설정-하한" type="date"></label>
+      <label class="칸">가짜 지금 시각(비우면 진짜 시각)<input id="설정-가짜" type="datetime-local"></label>
+    </div>
+    <label class="칸">화면<select id="설정-화면"><option value="자동">기기 따라</option><option value="어둡게">어둡게</option><option value="밝게">밝게</option></select></label>
+    <button id="설정저장" class="큰단추" type="button">저장</button>
+    <p id="설정알림" class="알림" hidden></p>
+    <p class="흐림 작게" id="판"></p>
+  </section>
+</main>
+
+<nav class="탭줄" role="tablist">
+  <button type="button" data-탭="상태" class="켜짐">상태창</button>
+  <button type="button" data-탭="공부">공부</button>
+  <button type="button" data-탭="카드">카드</button>
+  <button type="button" data-탭="기록">기록</button>
+  <button type="button" data-탭="설정" aria-label="설정">⚙</button>
+</nav>
+
+<script src="calc.js"></script>
+<script src="grade.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+/* 규격 v2.5 기준 */
+:root {
+  --바탕: #14171c; --면: #1d2229; --면2: #262c35; --글: #eef1f5; --흐림: #9aa4b2; --선: #333b46;
+  --강조: #5aa9ff; --좋음: #3ccf8e; --나쁨: #ff6b6b; --주의: #ffb547; --긴급바탕: #3a1518; --시험바탕: #2a2240;
+  --막대: #5aa9ff; --막대넘음: #b78cff;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-화면="어둡게"]) {
+    --바탕: #f6f7f9; --면: #ffffff; --면2: #eef1f5; --글: #15191f; --흐림: #5d6875; --선: #d6dbe2;
+    --강조: #1f6fd1; --좋음: #128a55; --나쁨: #c73636; --주의: #a8650a; --긴급바탕: #fde8e8; --시험바탕: #ece6fb;
+    --막대: #1f6fd1; --막대넘음: #7a4fd0; color-scheme: light;
+  }
+}
+:root[data-화면="밝게"] {
+  --바탕: #f6f7f9; --면: #ffffff; --면2: #eef1f5; --글: #15191f; --흐림: #5d6875; --선: #d6dbe2;
+  --강조: #1f6fd1; --좋음: #128a55; --나쁨: #c73636; --주의: #a8650a; --긴급바탕: #fde8e8; --시험바탕: #ece6fb;
+  --막대: #1f6fd1; --막대넘음: #7a4fd0; color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--바탕); color: var(--글);
+  font: 19px/1.5 system-ui, -apple-system, "Noto Sans KR", "Malgun Gothic", sans-serif;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+main { max-width: 720px; margin: 0 auto; padding: 8px 16px 24px; }
+h2 { font-size: 1.15em; margin: 1.2em 0 .5em; }
+h3 { font-size: 1em; margin: 1em 0 .4em; color: var(--흐림); }
+.흐림 { color: var(--흐림); }
+.작게 { font-size: .8em; }
+.윗줄 { position: sticky; top: 0; z-index: 5; background: var(--바탕); border-bottom: 1px solid var(--선); padding: 8px 16px 6px; }
+.맨위 { font-size: 1.05em; font-weight: 700; max-width: 720px; margin: 0 auto; }
+.긴급 { background: var(--긴급바탕); color: var(--나쁨); border-radius: 10px; padding: 8px 12px; margin: 6px auto 0; max-width: 720px; font-weight: 600; }
+.대기경고 { color: var(--주의); font-weight: 700; margin: 4px auto 0; max-width: 720px; }
+.시험띠 { background: var(--시험바탕); border-radius: 8px; padding: 4px 10px; margin: 0 auto 6px; max-width: 720px; font-size: .85em; }
+.연결줄 { display: flex; justify-content: space-between; align-items: center; gap: 8px; max-width: 720px; margin: 4px auto 0; font-size: .82em; color: var(--흐림); }
+.탭줄 {
+  position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--면); border-top: 1px solid var(--선);
+  padding-bottom: env(safe-area-inset-bottom); z-index: 6;
+}
+.탭줄 button { flex: 1; min-height: 64px; font: inherit; font-size: .95em; background: none; border: 0; color: var(--흐림); }
+.탭줄 button[data-탭="설정"] { flex: .55; font-size: 1.2em; }
+.탭줄 button.켜짐 { color: var(--강조); font-weight: 700; box-shadow: inset 0 3px 0 var(--강조); }
+.카드상자 { background: var(--면); border: 1px solid var(--선); border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
+.큰수 { font-size: 2em; font-weight: 800; line-height: 1.1; }
+.줄표 { width: 100%; border-collapse: collapse; }
+.줄표 td, .줄표 th { padding: 6px 4px; border-bottom: 1px solid var(--선); text-align: left; vertical-align: top; }
+.줄표 td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.줄표 th { color: var(--흐림); font-weight: 500; font-size: .85em; }
+.막대줄 { margin: 10px 0; }
+.막대이름 { display: flex; justify-content: space-between; font-size: .95em; }
+.막대틀 { height: 14px; background: var(--면2); border-radius: 7px; overflow: hidden; margin-top: 4px; }
+.막대속 { height: 100%; background: var(--막대); border-radius: 7px; }
+.막대속.넘음 { background: var(--막대넘음); }
+.작은막대 { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 4px 10px; margin-top: 6px; font-size: .8em; color: var(--흐림); }
+select, input[type="text"], input[type="url"], input[type="password"], input[type="number"], input[type="date"], input[type="datetime-local"], textarea {
+  font: inherit; color: var(--글); background: var(--면2); border: 1px solid var(--선); border-radius: 10px; padding: 10px 12px; width: 100%; min-height: 52px;
+}
+.과목고르기 { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.과목고르기 select { width: auto; flex: 1; }
+.칸 { display: block; margin: 12px 0; }
+.칸 > input, .칸 > select { margin-top: 4px; }
+.한줄 { display: flex; align-items: center; gap: 10px; }
+.한줄 input { width: 26px; height: 26px; }
+.큰단추 { font: inherit; font-weight: 700; width: 100%; min-height: 60px; border-radius: 14px; border: 0; background: var(--강조); color: #fff; margin: 10px 0; }
+.큰단추:disabled { opacity: .4; }
+.둘째단추 { background: var(--면2); color: var(--글); border: 1px solid var(--선); }
+.작은단추 { font: inherit; font-size: .9em; min-height: 40px; padding: 4px 12px; border-radius: 10px; border: 1px solid var(--선); background: var(--면2); color: var(--글); }
+.단추줄 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+.단추줄.넷 { grid-template-columns: repeat(2, 1fr); }
+.고름 { font: inherit; min-height: 60px; border-radius: 12px; border: 2px solid var(--선); background: var(--면2); color: var(--글); }
+.고름.켜짐 { border-color: var(--강조); background: color-mix(in srgb, var(--강조) 22%, var(--면2)); font-weight: 700; }
+.문제글 { font-size: 1.1em; line-height: 1.6; margin: 8px 0 12px; word-break: keep-all; overflow-wrap: anywhere; }
+.번호 { color: var(--흐림); font-weight: 700; }
+.뜻 { font-size: .85em; color: var(--흐림); background: var(--면2); border-radius: 10px; padding: 8px 10px; }
+.판정 { font-size: 1.4em; font-weight: 800; }
+.판정.맞음 { color: var(--좋음); }
+.판정.틀림 { color: var(--나쁨); }
+.해설 p { margin: 6px 0; }
+.알림 { background: var(--면2); border-radius: 10px; padding: 8px 12px; }
+.체력폼 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.체력폼 label { font-size: .85em; color: var(--흐림); }
+.체력폼 input { margin-top: 2px; }
+.목록줄 { display: flex; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--선); font-size: .88em; }
+.목록줄 .이름 { overflow-wrap: anywhere; }
+.좋음 { color: var(--좋음); }
+.나쁨 { color: var(--나쁨); }
+.주의 { color: var(--주의); }
+@media (max-width: 420px) { body { font-size: 18px; } .체력폼 { grid-template-columns: 1fr; } }
